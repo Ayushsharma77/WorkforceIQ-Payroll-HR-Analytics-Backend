@@ -1,0 +1,131 @@
+
+{% extends "base.html" %}
+ 
+{% block topbar_title %}Attendance{% endblock %}
+{% block topbar_sub %}Daily Check-in Tracker{% endblock %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <h1>Attendance Tracker</h1>
+    <p>Log employee check-ins, check-outs, and overtime hours in real time.</p>
+</div>
+ 
+<!-- Mark Attendance Form -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Mark Attendance</div>
+            <div class="panel-subtitle">Submits directly to the SQL attendance log</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleForm()">Toggle Form</button>
+    </div>
+    <div class="panel-body" id="att-form-body">
+        <form action="/mark-attendance" method="POST" class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Employee ID *</label>
+                <input type="number" name="emp_id" placeholder="e.g. 3" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Date *</label>
+                <input type="date" name="date" required class="form-input" id="att-date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status *</label>
+                <select name="status" required class="form-select">
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                    <option value="Late">Late</option>
+                    <option value="Half Day">Half Day</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Check-In Time</label>
+                <input type="time" name="check_in" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Check-Out Time</label>
+                <input type="time" name="check_out" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Overtime Hours</label>
+                <input type="number" step="0.5" name="overtime" placeholder="0" class="form-input">
+            </div>
+            <div class="form-group full">
+                <button type="submit" class="btn btn-primary btn-full" style="padding:13px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    Submit Attendance Log
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+ 
+<!-- Attendance Table -->
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Recent Attendance</div>
+            <div class="panel-subtitle">Latest entries from the database</div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>OT Hrs</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in attendance %}
+                <tr>
+                    <td style="color:var(--text-2);font-size:0.82rem;">{{ row.AttendanceDate }}</td>
+                    <td class="td-name">{{ row.FullName }}</td>
+                    <td>{{ row.DepartmentName }}</td>
+                    <td>{{ row.CheckIn if row.CheckIn else '—' }}</td>
+                    <td>{{ row.CheckOut if row.CheckOut else '—' }}</td>
+                    <td>
+                        {% if row.OvertimeHours and row.OvertimeHours > 0 %}
+                            <span style="color:var(--blue);font-weight:600;">+{{ row.OvertimeHours }}h</span>
+                        {% else %}
+                            <span style="color:var(--text-2);">0</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if row.Status == 'Present' %}
+                            <span class="badge badge-green">{{ row.Status }}</span>
+                        {% elif row.Status == 'Absent' %}
+                            <span class="badge badge-red">{{ row.Status }}</span>
+                        {% elif row.Status == 'Late' %}
+                            <span class="badge badge-amber">{{ row.Status }}</span>
+                        {% else %}
+                            <span class="badge badge-neutral">{{ row.Status }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+ 
+<script>
+// Auto-fill today's date
+document.getElementById('att-date').valueAsDate = new Date();
+function toggleForm() {
+    const b = document.getElementById('att-form-body');
+    b.style.display = b.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+ 
+{% endblock %}
+ 
+ 

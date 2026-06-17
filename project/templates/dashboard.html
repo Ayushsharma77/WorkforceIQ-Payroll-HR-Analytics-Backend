@@ -1,0 +1,162 @@
+ 
+{% extends "base.html" %}
+ 
+{% block topbar_title %}Dashboard{% endblock %}
+{% block topbar_sub %}Company Overview{% endblock %}
+ 
+{% block content %}
+ 
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h2>Good to see you. <span class="accent-text">WorkforceIQ</span> is live.</h2>
+    <p>All metrics are pulled live from your SQL database. Last refreshed just now.</p>
+</div>
+ 
+<!-- Stat Cards -->
+<div class="stats-grid">
+ 
+    <div class="stat-card green">
+        <div class="stat-top">
+            <div class="stat-label">Active Employees</div>
+            <div class="stat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.total_employees }}</div>
+        <div class="stat-meta">Across all departments</div>
+    </div>
+ 
+    <div class="stat-card blue">
+        <div class="stat-top">
+            <div class="stat-label">Departments</div>
+            <div class="stat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.departments }}</div>
+        <div class="stat-meta">Active business units</div>
+    </div>
+ 
+    <div class="stat-card amber">
+        <div class="stat-top">
+            <div class="stat-label">Pending Leaves</div>
+            <div class="stat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="13" x2="12" y2="17"/>
+                    <line x1="10" y1="15" x2="14" y2="15"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.pending_leaves }}</div>
+        <div class="stat-meta">Awaiting your approval</div>
+    </div>
+ 
+    <div class="stat-card red">
+        <div class="stat-top">
+            <div class="stat-label">Avg. Monthly Salary</div>
+            <div class="stat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">₹{{ "{:,.0f}".format(stats.avg_salary) }}</div>
+        <div class="stat-meta">Basic salary average</div>
+    </div>
+ 
+</div>
+ 
+<!-- Two column: Departments + Quick Actions -->
+<div class="two-col">
+ 
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Departments</div>
+                <div class="panel-subtitle">Headcount by business unit</div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="dept-list">
+                <div class="dept-row">
+                    <div class="dept-dot" style="background:#3b7bfc;"></div>
+                    <div class="dept-name">Engineering</div>
+                    
+                </div>
+                <div class="dept-row">
+                    <div class="dept-dot" style="background:#00d4aa;"></div>
+                    <div class="dept-name">Human Resources</div>
+                    
+                </div>
+                <div class="dept-row">
+                    <div class="dept-dot" style="background:#f59e0b;"></div>
+                    <div class="dept-name">Finance</div>
+                    
+                </div>
+                <div class="dept-row">
+                    <div class="dept-dot" style="background:#ef4444;"></div>
+                    <div class="dept-name">Sales</div>
+                    
+                </div>
+                <div class="dept-row">
+                    <div class="dept-dot" style="background:#8b5cf6;"></div>
+                    <div class="dept-name">Operations</div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Quick Actions</div>
+                <div class="panel-subtitle">Common HR tasks</div>
+            </div>
+        </div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
+            <a href="/employees" class="btn btn-ghost btn-full" style="justify-content:flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                Hire New Employee
+            </a>
+            <a href="/attendance" class="btn btn-ghost btn-full" style="justify-content:flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Mark Today's Attendance
+            </a>
+            <a href="/leaves" class="btn btn-ghost btn-full" style="justify-content:flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="9" y1="13" x2="15" y2="13"/>
+                </svg>
+                Review Pending Leaves
+            </a>
+            <a href="/payroll" class="btn btn-ghost btn-full" style="justify-content:flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+                View Payroll Summary
+            </a>
+        </div>
+    </div>
+ 
+</div>
+ 
+{% endblock %}
+ 

@@ -1,0 +1,4 @@
+pyodbc
+reportlab
+tabulate
+flask

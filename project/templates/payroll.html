@@ -1,0 +1,82 @@
+
+{% extends "base.html" %}
+ 
+{% block topbar_title %}Payroll{% endblock %}
+{% block topbar_sub %}Period {{ period }} Summary{% endblock %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <h1>Payroll Summary</h1>
+    <p>Period {{ period }} — all salary data is pulled live from your SQL payroll tables.</p>
+</div>
+ 
+<div class="alert alert-info">
+    You are viewing <strong>Period {{ period }}</strong>. Download individual payslips from the table below.
+</div>
+ 
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Employee Payroll</div>
+            <div class="panel-subtitle">Gross earnings, deductions, and net pay</div>
+        </div>
+        <a href="/run-payroll/{{ period }}" class="btn btn-accent btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Run Payroll
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Gross Pay</th>
+                    <th>Deductions</th>
+                    <th>Net Pay</th>
+                    <th>Status</th>
+                    <th>Payslip</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in payroll %}
+                <tr>
+                    <td class="td-id">#{{ row.EmployeeID }}</td>
+                    <td class="td-name">{{ row.FullName }}</td>
+                    <td>{{ row.DepartmentName }}</td>
+                    <td class="td-amount">₹{{ "{:,.0f}".format(row.GrossSalary) }}</td>
+                    <td class="td-amount td-deduct">−₹{{ "{:,.0f}".format(row.TotalDeductions) }}</td>
+                    <td class="td-amount td-net">₹{{ "{:,.0f}".format(row.NetSalary) }}</td>
+                    <td>
+                        {% if row.PaymentStatus == 'Paid' %}
+                            <span class="badge badge-green">{{ row.PaymentStatus }}</span>
+                        {% elif row.PaymentStatus == 'Pending' %}
+                            <span class="badge badge-amber">{{ row.PaymentStatus }}</span>
+                        {% else %}
+                            <span class="badge badge-neutral">{{ row.PaymentStatus }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/download/{{ row.EmployeeID }}/{{ period }}" class="btn btn-ghost btn-sm">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+ 
+{% endblock %}
+ 
+ 

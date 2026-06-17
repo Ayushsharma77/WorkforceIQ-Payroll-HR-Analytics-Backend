@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+ 
+{% block topbar_title %}Employees{% endblock %}
+{% block topbar_sub %}Directory & Hiring Portal{% endblock %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <h1>Employee Directory</h1>
+    <p>Manage your workforce — add, view, and track all employees from your SQL database.</p>
+</div>
+ 
+<!-- Add Employee Form -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Hire New Employee</div>
+            <div class="panel-subtitle">All fields are saved directly to the SQL database</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleForm()" id="form-toggle-btn">Hide Form</button>
+    </div>
+    <div class="panel-body" id="hire-form-body">
+        <form action="/add-employee" method="POST" class="form-grid">
+            <div class="form-group">
+                <label class="form-label">First Name *</label>
+                <input type="text" name="first_name" placeholder="Rahul" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Last Name *</label>
+                <input type="text" name="last_name" placeholder="Sharma" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input type="email" name="email" placeholder="rahul@company.com" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" placeholder="+91 9876543210" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">National ID *</label>
+                <input type="text" name="national_id" placeholder="Must be unique" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Gender *</label>
+                <select name="gender" required class="form-select">
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Date of Birth *</label>
+                <input type="date" name="dob" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Hire Date *</label>
+                <input type="date" name="hire_date" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Department *</label>
+                <select name="dept_id" required class="form-select">
+                    <option value="" disabled selected>Select department</option>
+                    <option value="1">Human Resources</option>
+                    <option value="2">Engineering</option>
+                    <option value="3">Finance</option>
+                    <option value="4">Sales</option>
+                    <option value="5">Operations</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Position *</label>
+                <select name="pos_id" required class="form-select">
+                    <option value="" disabled selected>Select position</option>
+                    <option value="1">HR Manager</option>
+                    <option value="3">Senior Engineer</option>
+                    <option value="4">Junior Engineer</option>
+                    <option value="6">Accountant</option>
+                    <option value="8">Sales Representative</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Basic Salary (₹) *</label>
+                <input type="number" name="salary" placeholder="65000" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bank Name</label>
+                <input type="text" name="bank_name" placeholder="State Bank of India" class="form-input">
+            </div>
+            <div class="form-group full">
+                <label class="form-label">Bank Account Number</label>
+                <input type="text" name="bank_acc" placeholder="Account number" class="form-input">
+            </div>
+            <div class="form-group full">
+                <button type="submit" class="btn btn-primary btn-full" style="padding:13px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save Employee to Database
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+ 
+<!-- Employee Table -->
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">All Employees</div>
+            <div class="panel-subtitle">{{ employees | length }} records found</div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Position</th>
+                    <th>Salary</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in employees %}
+                <tr>
+                    <td class="td-id">#{{ row.EmployeeID }}</td>
+                    <td class="td-name">{{ row.FullName }}</td>
+                    <td>{{ row.DepartmentName }}</td>
+                    <td>{{ row.PositionTitle }}</td>
+                    <td class="td-amount">₹{{ "{:,.0f}".format(row.BasicSalary) }}</td>
+                    <td>
+                        <span class="badge {% if row.EmploymentStatus == 'Active' %}badge-green{% else %}badge-neutral{% endif %}">
+                            {{ row.EmploymentStatus }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+ 
+<script>
+function toggleForm() {
+    const body = document.getElementById('hire-form-body');
+    const btn = document.getElementById('form-toggle-btn');
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        btn.textContent = 'Hide Form';
+    } else {
+        body.style.display = 'none';
+        btn.textContent = 'Add Employee';
+    }
+}
+</script>
+ 
+{% endblock %}
+ 

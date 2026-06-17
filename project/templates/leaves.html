@@ -1,0 +1,130 @@
+ 
+{% extends "base.html" %}
+ 
+{% block topbar_title %}Leave Manager{% endblock %}
+{% block topbar_sub %}Submit & Review Leave Requests{% endblock %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <h1>Leave Manager</h1>
+    <p>Track employee leave applications and approve or reject them from here.</p>
+</div>
+ 
+<!-- Apply Leave Form -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Apply for Leave</div>
+            <div class="panel-subtitle">Submit a new leave request to the queue</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleForm()">Toggle Form</button>
+    </div>
+    <div class="panel-body" id="leave-form-body">
+        <form action="/apply-leave" method="POST" class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Employee ID *</label>
+                <input type="number" name="emp_id" placeholder="e.g. 2" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Leave Type *</label>
+                <select name="leave_type" required class="form-select">
+                    <option value="1">Annual Leave</option>
+                    <option value="2">Sick Leave</option>
+                    <option value="3">Maternity Leave</option>
+                    <option value="4">Paternity Leave</option>
+                    <option value="5">Unpaid Leave</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Start Date *</label>
+                <input type="date" name="start_date" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">End Date *</label>
+                <input type="date" name="end_date" required class="form-input">
+            </div>
+            <div class="form-group full">
+                <label class="form-label">Reason *</label>
+                <input type="text" name="reason" placeholder="Brief explanation of the leave..." required class="form-input">
+            </div>
+            <div class="form-group full">
+                <button type="submit" class="btn btn-primary btn-full" style="padding:13px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                    Submit Leave Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+ 
+<!-- Leave Requests Table -->
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Leave Requests</div>
+            <div class="panel-subtitle">All pending and processed requests</div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Req #</th>
+                    <th>Employee</th>
+                    <th>Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in leaves %}
+                <tr>
+                    <td class="td-id">#{{ row.LeaveRequestID }}</td>
+                    <td class="td-name">{{ row.Employee }}</td>
+                    <td>{{ row.LeaveTypeName }}</td>
+                    <td style="font-size:0.82rem;color:var(--text-2);">{{ row.StartDate }}</td>
+                    <td style="font-size:0.82rem;color:var(--text-2);">{{ row.EndDate }}</td>
+                    <td><strong>{{ row.TotalDays }}d</strong></td>
+                    <td>
+                        {% if row.Status == 'Pending' %}
+                            <span class="badge badge-amber">{{ row.Status }}</span>
+                        {% elif row.Status == 'Approved' %}
+                            <span class="badge badge-green">{{ row.Status }}</span>
+                        {% elif row.Status == 'Rejected' %}
+                            <span class="badge badge-red">{{ row.Status }}</span>
+                        {% else %}
+                            <span class="badge badge-neutral">{{ row.Status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if row.Status == 'Pending' %}
+                        <div style="display:flex;gap:6px;">
+                            <a href="/leave-action/approve/{{ row.LeaveRequestID }}" class="btn btn-sm btn-success">Approve</a>
+                            <a href="/leave-action/reject/{{ row.LeaveRequestID }}"  class="btn btn-sm btn-danger">Reject</a>
+                        </div>
+                        {% else %}
+                        <span style="color:var(--text-2);font-size:0.78rem;">Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+ 
+<script>
+function toggleForm() {
+    const b = document.getElementById('leave-form-body');
+    b.style.display = b.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+ 
+{% endblock %}
+  
